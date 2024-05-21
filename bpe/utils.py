@@ -44,21 +44,20 @@ ic.configureOutput(prefix=' - ', outputFunction=log_to_file)
 
 def parallel_concat(arrs):
     lens = [len(arr) for arr in arrs]
-    start_idcs = np.cumsum([0] + lens[:-1])
+    start_idcs = [0] + [sum(lens[:i]) for i in range(1, len(lens))]
     total_len = sum(lens)
-    result = np.empty(total_len, dtype=arrs[0].dtype)
+    result = [None] * total_len
 
     def copy_elements(arr, start_idx):
-        result[start_idx:start_idx+len(arr)] = arr
+        result[start_idx:start_idx + len(arr)] = arr
 
     with ThreadPoolExecutor() as executor:
         executor.map(copy_elements, arrs, start_idcs)
 
     return result
 
-
 # Example usage
 if __name__ == "__main__":
-    arrs = [np.array([1, 2, 3]), np.array([4, 5]), np.array([6, 7, 8, 9])]
+    arrs = [[1, 2, 3], [4, 5], [6, 7, 8, 9]]
     result = parallel_concat(arrs)
     print(result)
