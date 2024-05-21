@@ -4,7 +4,7 @@ import math
 from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
 from typing import List, Dict, Tuple
-from utils import parallel_concat, logger
+from utils import parallel_concat
 from bpe_encode_decode import encode as bpe_encode
 from bpe_encode_decode import decode as bpe_decode
 
@@ -177,10 +177,12 @@ def train_bpe(in_string: str, vocab_size: int, special_tokens: List[str]) -> Tup
 class Tokenizer:
     def __init__(self, vocab: Dict[int, List[int]], merges: List[Tuple[List[int], List[int]]], special_tokens: List[str]):
         special_tokens.sort(key=lambda x: -len(x))
-        self.special_regex = re.compile('|'.join(re.escape(token) for token in special_tokens)) if special_tokens else None
+        self.special_regex = re.compile('|'.join(
+            re.escape(token) for token in special_tokens)) if special_tokens else None
 
         self.vocab = vocab
-        self.vocab_inv_bytes = [(v[0], k) for k, v in self.vocab.items() if len(v) == 1]
+        self.vocab_inv_bytes = [(v[0], k)
+                                for k, v in self.vocab.items() if len(v) == 1]
 
         merged_vocab = {}
         for e1, e2 in merges:
@@ -193,9 +195,11 @@ class Tokenizer:
         self.merges = merged_vocab
 
         vocab_inv = {tuple(v): k for k, v in vocab.items()}
-        self.special_tokens_inv = {tuple(v.encode()): vocab_inv[tuple(v.encode())] for v in special_tokens}
+        self.special_tokens_inv = {
+            tuple(v.encode()): vocab_inv[tuple(v.encode())] for v in special_tokens}
 
-        self.re = re.compile(r"'(?:[sdmt]|ll|ve|re)| ?\w+| ?\d+| ?[^\s\w\d]+|\s+(?!\S)|\s+")
+        self.re = re.compile(
+            r"'(?:[sdmt]|ll|ve|re)| ?\w+| ?\d+| ?[^\s\w\d]+|\s+(?!\S)|\s+")
 
     def encode(self, text: str) -> np.ndarray:
         if not text:
@@ -216,7 +220,8 @@ class Tokenizer:
         boundaries.append(len(text))
 
         boundaries = sorted(set(boundaries))
-        chunk_ranges = [range(boundaries[i], boundaries[i + 1]) for i in range(len(boundaries) - 1)]
+        chunk_ranges = [range(boundaries[i], boundaries[i + 1])
+                        for i in range(len(boundaries) - 1)]
 
         def process_chunk(chunk_range):
             chunk = text[chunk_range.start:chunk_range.stop]
@@ -225,20 +230,21 @@ class Tokenizer:
             if self.special_regex:
                 for snip in self.special_regex.finditer(chunk):
                     chunk_text = chunk[offset:snip.start()]
-                    tokens.extend(bpe_encode(self.re, self.vocab_inv_bytes, self.merges, chunk_text))
-                    special_token = self.special_tokens_inv[tuple(snip.group().encode())]
+                    tokens.extend(bpe_encode(
+                        self.re, self.vocab_inv_bytes, self.merges, chunk_text))
+                    special_token = self.special_tokens_inv[tuple(
+                        snip.group().encode())]
                     tokens.append(special_token)
                     offset = snip.end()
             if offset < len(chunk):
-                tokens.extend(bpe_encode(self.re, self.vocab_inv_bytes, self.merges, chunk[offset:]))
+                tokens.extend(bpe_encode(
+                    self.re, self.vocab_inv_bytes, self.merges, chunk[offset:]))
             return tokens
 
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
             words_chunks = list(executor.map(process_chunk, chunk_ranges))
 
-        logger(words_chunks)
         words = parallel_concat(words_chunks)
-        logger(words)
         return words
 
     def decode(self, tokens: List[int]) -> str:

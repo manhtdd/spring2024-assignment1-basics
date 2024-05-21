@@ -1,7 +1,6 @@
 import regex as re
 from itertools import tee, islice
 from typing import List, Tuple, Dict
-from utils import logger
 
 
 def encode(
@@ -48,8 +47,6 @@ def encode(
 
 
 def decode(v: List[int], vocab: Dict[int, bytes]) -> bytes:
-    for token in v:
-        logger(vocab[token])
     return b''.join(bytearray(vocab[token]) for token in v)
 
 

@@ -3,7 +3,7 @@ import math
 from collections import defaultdict
 from typing import List, Tuple, Dict
 from concurrent.futures import ThreadPoolExecutor
-from utils import logger, parallel_concat
+from utils import parallel_concat
 
 Pair = Tuple[int, int]
 NUM_THREADS = 1  # You can adjust this to the number of threads you want
@@ -125,11 +125,9 @@ def train_bpe(in_string: str, vocab_size: int, special_tokens: List[str]) -> Tup
         boundaries.append(loc)
     boundaries.append(len(in_string))
     boundaries = sorted(set(boundaries))
-    logger(boundaries)
 
     chunk_ranges = [(boundaries[i], boundaries[i+1])
-                    for i in range(len(boundaries)-1)]    
-    logger(chunk_ranges)
+                    for i in range(len(boundaries)-1)]
 
     regex = re.compile(
         r"'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+")
@@ -141,7 +139,7 @@ def train_bpe(in_string: str, vocab_size: int, special_tokens: List[str]) -> Tup
     with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         words_list = list(executor.map(
             lambda r: process_chunk(*r), chunk_ranges))
-    
+
     words = parallel_concat(words_list)
     words = count_words(words)
     max_symbols = vocab_size
@@ -173,13 +171,10 @@ def train_bpe(in_string: str, vocab_size: int, special_tokens: List[str]) -> Tup
 
 
 def main():
-    logger("New Test ------------------------------")
     in_string = "the cat ate the rat"
     vocab_size = 300
     special_tokens = ["<s>", "<e>", "<unk>"]
     vocab, merges = train_bpe(in_string, vocab_size, special_tokens)
-    for key, item in vocab.items():
-        logger(key, bytearray(item))
 
 
 if __name__ == "__main__":
