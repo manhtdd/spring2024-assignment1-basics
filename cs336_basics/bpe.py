@@ -4,7 +4,7 @@ from contextlib import contextmanager
 import time
 from pathlib import Path
 from dataclasses import dataclass
-from bpe_utils.lib import train_bpe as _train_bpe, Tokenizer
+from .bpe_utils.lib import train_bpe as _train_bpe, Tokenizer
 import regex as re
 import numpy as np
 
@@ -41,7 +41,7 @@ def train_bpe(in_string: bytes, vocab_size: int, special_tokens: List[str]) -> T
 
 
 @dataclass
-class Tokenizer:
+class BPETokenizer:
     vocab: dict[int, bytes]
     merges: list[tuple[bytes, bytes]]
     tokenizer: Tokenizer | None
@@ -79,8 +79,8 @@ class Tokenizer:
         return cls.from_training_text(text, vocab_size, special_tokens)
 
     def encode(self, text: str | bytes, as_list=True) -> list[int] | np.ndarray:
-        if isinstance(text, str):
-            text = text.encode('utf-8', errors='replace')
+        if not isinstance(text, str):
+            text = text.decode('utf-8')
         tokens = self.tokenizer.encode(text)
         if as_list:
             return tokens.tolist()
