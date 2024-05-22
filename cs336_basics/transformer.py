@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 import torch.nn.functional as F
 from math import sqrt
@@ -10,6 +11,7 @@ class Transformer(nn.Module):
     def __init__(self,
                  *,
                  vocab_size: int,
+                 context_length: int, 
                  num_layers: int,
                  d_model: int,
                  num_heads: int,
@@ -25,7 +27,7 @@ class Transformer(nn.Module):
         self.token_embedding = nn.Embedding(vocab_size, d_model, device=device)
         if tie_embeddings:
             nn.init.kaiming_uniform_(self.token_embedding.weight, a=sqrt(5))
-
+        self.position_embedding = nn.Parameter(torch.zeros(context_length, d_model, device=device))
         self.blocks = nn.Sequential(*[TransformerBlock(d_model=d_model,
                                                        num_heads=num_heads,
                                                        activation=activation,
@@ -52,7 +54,7 @@ class Transformer(nn.Module):
             return out_d
 
         self.token_embedding.weight.data[:] = d["token_embeddings.weight"]
-        # self.position_embedding.data[:] = d["position_embeddings.weight"]
+        self.position_embedding.data[:] = d["position_embeddings.weight"]
         for i, block in enumerate(self.blocks.children()):
             block.set_weights_from_dict(dict_subset(d, f"layers.{i}"))
         assert f'layers.{i + 1}' not in d, "Extra weights in state dict"
@@ -60,11 +62,10 @@ class Transformer(nn.Module):
         self.lm_head.weight.data[:] = d["lm_head.weight"]
 
     def forward(self, x):
-        # if hasattr(self, 'position_embedding'):
-        #     x_embedded = self.token_embedding(x) + self.position_embedding[None, :x.shape[-1], :]
-        #     x = self.dropout(x_embedded)
-        # else:
-        x = self.dropout(self.token_embedding(x))
+        if hasattr(self, 'position_embedding'):
+            x = self.dropout(self.token_embedding(x) + self.position_embedding[None, :x.shape[-1], :])
+        else:
+            x = self.dropout(self.token_embedding(x))
         x = self.blocks(x)
         x = self.ln_final(x)
         if self.tie_embeddings:
