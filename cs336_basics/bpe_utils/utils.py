@@ -1,4 +1,3 @@
-from icecream import ic
 import numpy as np
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -44,7 +43,7 @@ def log_to_file(message):
 
 
 # Replace logging configuration with IceCream configuration
-ic.configureOutput(prefix=' - ', outputFunction=log_to_file)
+logger.configureOutput(prefix=' - ', outputFunction=log_to_file)
 
 
 def parallel_concat(arrs: List[np.ndarray] | List[List[int]]) -> np.ndarray:

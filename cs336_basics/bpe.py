@@ -32,10 +32,10 @@ def train_bpe(in_string: bytes, vocab_size: int, special_tokens: List[str]) -> T
     vocab, merges = _train_bpe(in_string, vocab_size, special_tokens)
     
     # Convert vocab to Python dictionary
-    vocab_py = {k: v.encode('utf-8') for k, v in sorted(vocab.items())}
+    vocab_py = {k: bytes(v) for k, v in sorted(vocab.items())}
     
     # Convert merges to list of tuples
-    merges_py = [(k.encode('utf-8'), v.encode('utf-8')) for k, v in merges]
+    merges_py = [(bytes(k), bytes(v)) for k, v in merges]
     
     return vocab_py, merges_py
 
