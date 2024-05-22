@@ -8,13 +8,14 @@ import numpy.typing as npt
 import torch
 
 from cs336_basics.bpe import BPETokenizer
-from cs336_basics.rmsnorm import RMSNorm
-from cs336_basics.gelu import gelu
-from cs336_basics.positionwise_feedforward import PositionwiseFeedForward
-from cs336_basics.softmax import softmax
-from cs336_basics.sdpa import sdpa
-from cs336_basics.multi_head_self_attn import MHSelfAttention
-from cs336_basics.transformer_block import TransformerBlock
+from cs336_basics.transformer_utils.rmsnorm import RMSNorm
+from cs336_basics.transformer_utils.gelu import gelu
+from cs336_basics.transformer_utils.positionwise_feedforward import PositionwiseFeedForward
+from cs336_basics.transformer_utils.softmax import softmax
+from cs336_basics.transformer_utils.sdpa import sdpa
+from cs336_basics.transformer_utils.multi_head_self_attn import MHSelfAttention
+from cs336_basics.transformer_utils.transformer_block import TransformerBlock
+from cs336_basics.transformer import Transformer
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -320,7 +321,9 @@ def run_transformer_lm(
         FloatTensor of shape (batch size, sequence_length, vocab_size) with the predicted unnormalized
         next-word distribution for each token.
     """
-    raise NotImplementedError
+    transformer = Transformer(vocab_size=vocab_size, context_length=context_length, num_layers=num_layers, d_model=d_model, num_heads=num_heads, d_ff=d_ff, attn_pdrop=attn_pdrop, residual_pdrop=residual_pdrop)
+    transformer.set_weights_from_dict(weights)
+    return transformer(in_indices)
 
 
 def run_rmsnorm(
