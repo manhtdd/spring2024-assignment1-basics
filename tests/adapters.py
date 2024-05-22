@@ -13,6 +13,7 @@ from cs336_basics.gelu import gelu
 from cs336_basics.positionwise_feedforward import PositionwiseFeedForward
 from cs336_basics.softmax import softmax
 from cs336_basics.sdpa import sdpa
+from cs336_basics.multi_head_self_attn import MHSelfAttention
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -143,7 +144,9 @@ def run_multihead_self_attention(
         torch.FloatTensor with the output of running your optimized, batched multi-headed attention
         implementation with the given QKV projection weights and input features.
     """
-    raise NotImplementedError
+    mhsa = MHSelfAttention(d_model=d_model, num_heads=num_heads, attn_pdrop=attn_pdrop)
+    mhsa.set_weights_from_dict(weights)
+    return mhsa(in_features)
 
 
 def run_transformer_block(
