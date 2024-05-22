@@ -12,6 +12,7 @@ from cs336_basics.rmsnorm import RMSNorm
 from cs336_basics.gelu import gelu
 from cs336_basics.positionwise_feedforward import PositionwiseFeedForward
 from cs336_basics.softmax import softmax
+from cs336_basics.sdpa import sdpa
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -92,7 +93,7 @@ def run_scaled_dot_product_attention(
         with the output of running your scaled dot product attention
         implementation with the provided key, query, and value tensors.
     """
-    raise NotImplementedError
+    return sdpa(Q, K, V, mask, pdrop)
 
 
 def run_multihead_self_attention(
