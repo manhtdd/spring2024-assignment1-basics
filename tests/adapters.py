@@ -10,6 +10,7 @@ import torch
 from cs336_basics.bpe import BPETokenizer
 from cs336_basics.rmsnorm import RMSNorm
 from cs336_basics.gelu import gelu
+from cs336_basics.positionwise_feedforward import PositionwiseFeedForward
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -46,7 +47,9 @@ def run_positionwise_feedforward(
     # You can also manually assign the weights
     # my_ffn.w1.weight.data = weights["w1.weight"]
     # my_ffn.w2.weight.data = weights["w2.weight"]
-    raise NotImplementedError
+    pff = PositionwiseFeedForward(d_model=d_model, d_ff=d_ff)
+    pff.set_weights_from_dict(weights)
+    return pff(in_features)
 
 
 def run_scaled_dot_product_attention(
