@@ -9,6 +9,7 @@ import torch
 
 from cs336_basics.bpe import BPETokenizer
 from cs336_basics.rmsnorm import RMSNorm
+from cs336_basics.gelu import gelu
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -350,7 +351,7 @@ def run_gelu(in_features: torch.FloatTensor) -> torch.FloatTensor:
         FloatTensor of with the same shape as `in_features` with the output of applying
         GELU to each element.
     """
-    raise NotImplementedError
+    return gelu(in_features)
 
 
 def run_get_batch(
