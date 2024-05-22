@@ -14,6 +14,7 @@ from cs336_basics.positionwise_feedforward import PositionwiseFeedForward
 from cs336_basics.softmax import softmax
 from cs336_basics.sdpa import sdpa
 from cs336_basics.multi_head_self_attn import MHSelfAttention
+from cs336_basics.transformer_block import TransformerBlock
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -218,7 +219,15 @@ def run_transformer_block(
         FloatTensor of shape (batch_size, sequence_length, d_model) with the output of
         running the Transformer block on the input features.
     """
-    raise NotImplementedError
+    transformer_block = TransformerBlock(
+        d_model=d_model,
+        num_heads=num_heads,
+        d_ff=d_ff,
+        attn_pdrop=attn_pdrop,
+        residual_pdrop=residual_pdrop
+    )
+    transformer_block.set_weights_from_dict(weights)
+    return transformer_block(in_features)
 
 
 def run_transformer_lm(
