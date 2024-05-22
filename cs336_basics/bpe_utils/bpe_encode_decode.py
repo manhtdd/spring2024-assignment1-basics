@@ -1,6 +1,7 @@
 import regex as re
 from itertools import tee, islice
 from typing import List, Tuple, Dict
+import numpy as np
 
 
 def encode(
@@ -9,7 +10,7 @@ def encode(
     vocab_inv_bytes: List[Tuple[bytes, int]],
     merges: Dict[Tuple[int, int], int],  # Tuple of tokens to merged token
     text: str
-) -> List[int]:
+) -> np.ndarray:
     def tuple_windows(iterable, n=2):
         iters = tee(iterable, n)
         for i, it in enumerate(iters):
@@ -30,7 +31,6 @@ def encode(
             for i, (a, b) in enumerate(tuple_windows(symbols)):
 
                 if (a, b) in merges:
-
                     candidate_merges.append((i, merges[(a, b)]))
             if not candidate_merges:
                 break
@@ -43,10 +43,10 @@ def encode(
 
         encoded.extend(symbols)
 
-    return encoded
+    return np.array(encoded, dtype='uint16')
 
 
-def decode(v: List[int], vocab: Dict[int, bytes]) -> bytes:
+def decode(v: np.ndarray, vocab: Dict[int, bytes]) -> bytes:
     return b''.join(bytearray(vocab[token]) for token in v)
 
 
