@@ -248,13 +248,13 @@ class Tokenizer:
         return words
 
     def decode(self, tokens: List[int]) -> str:
-        decoded = bpe_decode(tokens, self.vocab)
-        return ''.join(map(chr, decoded))
+        decoded_bytes = bpe_decode(tokens, self.vocab)
+        return decoded_bytes.decode('utf-8', errors='replace')
 
 
 # Example usage:
 if __name__ == "__main__":
-    in_string = "<s>the cat ate <unk> the rat<e>"
+    in_string = "🙃"
     vocab_size = 300
     special_tokens = ["<s>", "<e>", "<unk>"]
     vocab, merges = train_bpe(in_string, vocab_size, special_tokens)
