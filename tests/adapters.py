@@ -11,6 +11,7 @@ from cs336_basics.bpe import BPETokenizer
 from cs336_basics.rmsnorm import RMSNorm
 from cs336_basics.gelu import gelu
 from cs336_basics.positionwise_feedforward import PositionwiseFeedForward
+from cs336_basics.softmax import softmax
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -398,7 +399,7 @@ def run_softmax(in_features: torch.FloatTensor, dim: int) -> torch.FloatTensor:
         FloatTensor of with the same shape as `in_features` with the output of
         softmax normalizing the specified `dim`.
     """
-    raise NotImplementedError
+    return softmax(in_features, dim)
 
 
 def run_cross_entropy(inputs: torch.FloatTensor, targets: torch.LongTensor):
