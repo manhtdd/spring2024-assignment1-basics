@@ -19,6 +19,7 @@ from cs336_basics.transformer import Transformer
 from cs336_basics.training_utils.loss import cross_entropy_loss
 from cs336_basics.training_utils.adamw import AdamW
 from cs336_basics.training_utils.lr_schedule import cosine_with_warmup_lr_schedule
+from cs336_basics.training_utils.gradient_clipping import gradient_clipping
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -451,7 +452,7 @@ def run_gradient_clipping(parameters: Iterable[torch.nn.Parameter], max_l2_norm:
     Returns:
         None
     """
-    raise NotImplementedError
+    return gradient_clipping(parameters, max_l2_norm)
 
 
 def get_adamw_cls() -> Type[torch.optim.Optimizer]:
