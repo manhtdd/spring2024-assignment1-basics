@@ -20,6 +20,7 @@ from cs336_basics.training_utils.loss import cross_entropy_loss
 from cs336_basics.training_utils.adamw import AdamW
 from cs336_basics.training_utils.lr_schedule import cosine_with_warmup_lr_schedule
 from cs336_basics.training_utils.gradient_clipping import gradient_clipping
+from cs336_basics.training import load_data
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -402,7 +403,7 @@ def run_get_batch(
         is the sampled input sequences, and the second tuple item is the corresponding
         language modeling labels.
     """
-    raise NotImplementedError
+    return load_data(dataset, batch_size, context_length, device)
 
 
 def run_softmax(in_features: torch.FloatTensor, dim: int) -> torch.FloatTensor:
