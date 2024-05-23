@@ -18,6 +18,7 @@ from cs336_basics.transformer_utils.transformer_block import TransformerBlock
 from cs336_basics.transformer import Transformer
 from cs336_basics.training_utils.loss import cross_entropy_loss
 from cs336_basics.training_utils.adamw import AdamW
+from cs336_basics.training_utils.lr_schedule import cosine_with_warmup_lr_schedule
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -490,7 +491,7 @@ def run_get_lr_cosine_schedule(
     Returns:
         Learning rate at the given iteration under the specified schedule.
     """
-    raise NotImplementedError
+    return cosine_with_warmup_lr_schedule(it, max_learning_rate, min_learning_rate, warmup_iters, cosine_cycle_iters)
 
 
 def run_save_checkpoint(
