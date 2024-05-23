@@ -16,6 +16,7 @@ from cs336_basics.transformer_utils.sdpa import sdpa
 from cs336_basics.transformer_utils.multi_head_self_attn import MHSelfAttention
 from cs336_basics.transformer_utils.transformer_block import TransformerBlock
 from cs336_basics.transformer import Transformer
+from cs336_basics.training_utils.loss import cross_entropy_loss
 
 def run_positionwise_feedforward(
     d_model: int,
@@ -433,7 +434,7 @@ def run_cross_entropy(inputs: torch.FloatTensor, targets: torch.LongTensor):
     Returns:
         Tensor of shape () with the average cross-entropy loss across examples.
     """
-    raise NotImplementedError
+    return cross_entropy_loss(logits=inputs, targets=targets)
 
 
 def run_gradient_clipping(parameters: Iterable[torch.nn.Parameter], max_l2_norm: float):
